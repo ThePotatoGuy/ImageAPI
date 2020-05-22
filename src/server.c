@@ -8,18 +8,6 @@
 
 #include "server.h"
 #include "logging.h"
-#include "http_parser.h"
-
-static http_parser_settings httpParserSettings;
-
-int urlCallback(http_parser* parser, const char *at, size_t length) {
-
-    // Read length of url and copy it to data ptr on parser
-    parser->data = malloc(length);
-    memcpy(parser->data, at, length);
-    return 0;
-
-}
 
 void *connection(void *p) {
 
@@ -30,10 +18,6 @@ void *connection(void *p) {
     char *send_buf = NULL;
 
     log_Debug("Incoming Request");
-
-    // Create parser
-    http_parser *httpParser = malloc(sizeof(http_parser));
-    http_parser_init(httpParser, HTTP_REQUEST);
 
     // Accept only 1024 bytes
     nrecv = recv(*connfd_thread, recv_buf, sizeof(recv_buf), 0);
@@ -49,20 +33,10 @@ void *connection(void *p) {
         goto exit;
     }
 
-    // Parse request
-    parsed = http_parser_execute(httpParser, &httpParserSettings, recv_buf, nrecv);
-    if (parsed != nrecv) {
-        log_Warning("Parser failure, recieved bytes not same as parsed bytes.\n");
-        send(*connfd_thread, "HTTP/1.1 500 Internal Server Error\n\n", 36, 0);
-        goto exit;
-    }
-
-    send(*connfd_thread, "HTTP/1.1 200 OK\n\n", 17, 0);
+    // send(*connfd_thread, "HTTP/1.1 200 OK\n\n", 17, 0);
 
 exit:
     free(send_buf);
-    free(httpParser->data);
-    free(httpParser);
     close(*connfd_thread);
     pthread_exit(NULL);
 
@@ -75,9 +49,6 @@ int server_Start(char *sockPath) {
     int running = 0;
     int connfd;
     pthread_t thread;
-
-    // Setup http parser settings
-    httpParserSettings.on_url = urlCallback;
 
     // Create socket file descriptor
     if((sfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
