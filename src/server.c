@@ -58,6 +58,13 @@ void *connection(void *p) {
 
     // Find image type from url.
     char *imgType = utils_GetImageType(httpParser->data);
+    
+    // If imgType is null, return default response
+    if (imgType == NULL) {
+        char *s = "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"success\":true,\"message\":\"Image API Endpoint.\",\"version\":4}";
+        send(*connfd_thread, s, strlen(s), 0);
+        goto exit;
+    }
 
     // Respond
     send(*connfd_thread, "HTTP/1.1 200 OK\n\n", 17, 0);
