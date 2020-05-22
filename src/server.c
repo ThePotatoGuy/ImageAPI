@@ -8,8 +8,8 @@
 
 #include "server.h"
 #include "logging.h"
-#include "yuarel.h"
 #include "http_parser.h"
+#include "utils.h"
 
 http_parser_settings parserSettings;
 
@@ -56,7 +56,10 @@ void *connection(void *p) {
         goto exit;
     }
 
-    printf("%s\n", httpParser->data);
+    // Find image type from url.
+    char *imgType = utils_GetImageType(httpParser->data);
+
+    // Respond
     send(*connfd_thread, "HTTP/1.1 200 OK\n\n", 17, 0);
 
 exit:
