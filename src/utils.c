@@ -35,3 +35,19 @@ char *utils_GetImageType(char *url) {
     return imgtype;
 
 }
+
+char *utils_RandomFileFromDirectory(char *type) {
+
+    return NULL;
+    
+}
+
+char *utils_GetImage(char *imgtype) {
+
+    // if (memcmp(imgtype, "hentai", 6) == 0) {
+        
+    // }
+
+    return NULL;
+
+}

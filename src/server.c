@@ -56,7 +56,7 @@ void *connection(void *p) {
         goto exit;
     }
 
-    // Find image type from url.
+    // Find image type from request.
     char *imgType = utils_GetImageType(httpParser->data);
     
     // If imgType is null, return default response
@@ -65,6 +65,9 @@ void *connection(void *p) {
         send(*connfd_thread, s, strlen(s), 0);
         goto exit;
     }
+
+    // Get image to respond with
+    char *imgPath = utils_GetImage(imgType);
 
     // Respond
     send(*connfd_thread, "HTTP/1.1 200 OK\n\n", 17, 0);
