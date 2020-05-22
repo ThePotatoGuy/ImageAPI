@@ -8,6 +8,7 @@
 
 #include "server.h"
 #include "logging.h"
+#include "yuarel.h"
 
 void *connection(void *p) {
 
